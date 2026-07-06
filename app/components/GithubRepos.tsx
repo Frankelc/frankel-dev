@@ -14,31 +14,42 @@ type Repo = {
 
 // Curated labels/descriptions for repos whose GitHub metadata is empty.
 const OVERRIDES: Record<string, { type?: string; desc?: string }> = {
-  IFRI: { type: "Template", desc: "Support pour poser et documenter des problèmes." },
-  "OLAMAR-SERVICE": { type: "Repository", desc: "Projet de service — forké par la communauté." },
+  "frankel-dev": { type: "Next.js · TypeScript", desc: "Ce portfolio — Next.js 16, App Router, section GitHub live." },
+  "baya-luxe": { type: "UI · TypeScript", desc: "Interface e-commerce haut de gamme en TypeScript." },
+  "zone-x-launchpad": { type: "UI · TypeScript", desc: "Landing page / launchpad produit en TypeScript." },
+  "zenith-business-template": { type: "Template · TypeScript", desc: "Template de site vitrine business en TypeScript." },
+  "inspectorWi_fi": { type: "Python", desc: "Outil d'inspection et d'analyse réseau Wi-Fi." },
+  "smart-haven-ui": { type: "UI · TypeScript", desc: "Interface en TypeScript — projet en exploration." },
+  "gilded-moments": { type: "UI · TypeScript", desc: "Interface front-end en TypeScript." },
   "no-l-magique-cr-ateur": { type: "TypeScript", desc: "Expérimentation front-end en TypeScript." },
   site_dealer: { type: "Fork · JavaScript", desc: "Fork depuis Legeek117/site_dealer." },
-  "smart-haven-ui": { type: "TypeScript", desc: "Interface en TypeScript — projet en exploration." },
-  "gilded-moments": { type: "TypeScript", desc: "Projet TypeScript — détails à venir." },
   "wa-companion": { type: "Fork · TypeScript", desc: "Companion WhatsApp — fork expérimental." },
+  "OLAMAR-SERVICE": { type: "Repository", desc: "Projet de service — forké par la communauté." },
+  IFRI: { type: "Template", desc: "Support pour poser et documenter des problèmes." },
 };
 
-// Repos to hide (scratch/test repos).
-const HIDE = new Set(["essaie"]);
+// Repos to hide (scratch/test repos not worth showcasing).
+const HIDE = new Set(["essaie", "test-pro"]);
+
+// How many repos to display in the grid.
+const MAX_REPOS = 9;
 
 // Static fallback so the build never fails when GitHub is unreachable.
 const FALLBACK: Repo[] = [
-  "IFRI",
-  "OLAMAR-SERVICE",
-  "no-l-magique-cr-ateur",
-  "site_dealer",
+  "frankel-dev",
+  "baya-luxe",
+  "zone-x-launchpad",
+  "zenith-business-template",
   "smart-haven-ui",
   "gilded-moments",
+  "no-l-magique-cr-ateur",
+  "site_dealer",
+  "inspectorWi_fi",
 ].map((name) => ({
   name,
   html_url: `https://github.com/${GITHUB_USER}/${name}`,
   description: null,
-  language: OVERRIDES[name]?.type?.includes("Java") ? "JavaScript" : "TypeScript",
+  language: name === "site_dealer" ? "JavaScript" : name === "inspectorWi_fi" ? "Python" : "TypeScript",
   stargazers_count: 0,
   forks_count: 0,
   fork: false,
@@ -62,7 +73,7 @@ async function getRepos(): Promise<Repo[]> {
         (a, b) =>
           new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime()
       )
-      .slice(0, 6);
+      .slice(0, MAX_REPOS);
   } catch {
     return FALLBACK;
   }
@@ -110,7 +121,10 @@ export default async function GithubRepos() {
             const o = OVERRIDES[repo.name] ?? {};
             const type =
               o.type ?? (repo.fork ? `Fork · ${repo.language ?? "Repo"}` : repo.language ?? "Repository");
-            const desc = repo.description ?? o.desc ?? "Dépôt public.";
+            const desc =
+              repo.description ??
+              o.desc ??
+              `Projet ${repo.language ?? "logiciel"}.`;
             return (
               <a
                 className="proj"
