@@ -31,8 +31,8 @@ const OVERRIDES: Record<string, { type?: string; desc?: string }> = {
 // Repos to hide (scratch/test repos not worth showcasing).
 const HIDE = new Set(["essaie", "test-pro"]);
 
-// How many repos to display in the grid.
-const MAX_REPOS = 9;
+// How many repos to display in the grid (high cap = show all public repos).
+const MAX_REPOS = 50;
 
 // Static fallback so the build never fails when GitHub is unreachable.
 const FALLBACK: Repo[] = [
